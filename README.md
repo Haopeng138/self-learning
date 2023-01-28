@@ -1,1 +1,2 @@
-# SelfStudy
+# self-learning
+
