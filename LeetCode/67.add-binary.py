@@ -7,19 +7,8 @@
 # @lc code=start
 class Solution:
     def addBinary(self, a: str, b: str) -> str:
-        diff = len(a) - len(b)
-        if diff > 0:
-            for x in range(0,diff-1):
-                b = '0' + b
-        elif diff < 0:
-             for x in range(0,abs(diff)):
-                b = '0' + b
-        carry = 0
-        result = ''
-        print(a)
-        print(b)
-        for x in range(0,max(len(a),len(b))):
-            result += 3
+        return bin(int(a,2)+int(b,2))[2:]
+             
 
             
 # @lc code=end
