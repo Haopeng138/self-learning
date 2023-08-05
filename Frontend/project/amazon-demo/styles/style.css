@@ -1,0 +1,94 @@
+/* Header/Logo Title */
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    padding: 1vh;
+    text-align: center;
+    background: #131921;
+    color: white;
+    font-size: 30px;
+    margin: 0px;
+}
+
+.header-container{
+    padding: 1vh;
+    width: min-content;
+    draggable: true;
+}
+
+.header-container:hover{
+    border: 1px solid white;
+    transition: 1s;
+}
+
+
+.logo{
+    display: flex;
+    flex-direction: row;
+}
+
+.logoTitle{
+    font-size: 30px;
+    line-height: 1em;
+    text-decoration: underline;
+    text-decoration-color: red;
+}
+
+.logoDomain{
+    font-size: 20px;
+    line-height: 1.75em;
+}
+
+.mapIcon{
+    filter: invert(100%);
+    margin-right: 1px;
+    margin-top: 12px;
+}
+
+.text1{
+    font-size: 12px;
+    line-height: 1.75em;
+    text-align: left;
+}
+
+.text2{
+    font-size: 14px;
+    line-height: 1.75em;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.adress{
+    display: flex;
+    flex-direction: row;
+}
+
+#departament{
+    height: 20px;
+    width: 80px;
+    background: #F3F3F3;
+}
+
+.search-bar{
+    display: flex;
+    flex-direction: row;
+}
+
+.header-container input[type=text] {
+    float: right;
+    padding: 6px;
+    border: none;
+    margin-top: 8px;
+    margin-right: 16px;
+    font-size: 17px;
+}
+
+.search-icon{
+    object-fit: cover;
+    background: #F3F3F3;
+}
