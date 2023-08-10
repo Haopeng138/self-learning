@@ -2,64 +2,97 @@ const items = document.querySelectorAll('.list-item')
 const playGround = document.querySelector('.playground')
 const list = document.querySelector('.list')
 
-function createAnimation(scrollStart,scrollEnd,valueStart,valueEnd){
-    return function(scroll){
-        if (scroll <= scrollStart){
-            return valueStart
+
+function createAnimation(xStart,xEnd,yStart,yEnd){
+    return function(x){
+        if(x < xStart){
+            return yStart
+        }
+        if(x > xEnd){
+            return yEnd
         }
 
-        if (scroll >= scrollEnd){
-            return valueEnd
-        }
-
-        return valueStart + (valueEnd - valueStart) * (scroll - scrollStart) / (scrollEnd - scrollStart)
+        return yStart + ((x-xStart)/(xEnd-xStart))*(yEnd-yStart)  
     }
 }
 
 const animationsMap = new Map()
 
-function getDomAnimation(scrollStart,scrollEnd,dom){
-    scrollStart = scrollStart + dom.dataset.order *300
-    const opacityAnimation = createAnimation(scrollStart,scrollStart,1,0)
-    const opacity = function(scroll){
-        return opacityAnimation(scroll)
-    }
-    const scaleAnimation = createAnimation(scrollStart,scrollStart,.3,1)
-
-    const xAnimation = createAnimation(scrollStart,scrollStart,list.clientWidth / 2 - dom.offsetLeft - dom.clientWidth / 2,0)
-    const yAnimation = createAnimation(scrollStart,scrollStart,list.clientHeight / 2 - dom.offsetTop - dom.clientHeight / 2,0)
-    const transform = function(scroll){
-        return `translate(${xAnimation(scroll)}px,${yAnimation(scroll)}px) scale(${scaleAnimation(scroll)})`
-    }
-
-    return {
-        opacity,
-        transform
-    }
-}
-
-function updateMap(){
+function updateAnimationMap(){
     animationsMap.clear()
-    const playGroundRect = playGround.getBoundingClientRect()
-    const scrollStart = playGroundRect.top + window.scrollY
-    const scrollEnd = playGroundRect.bottom + window.scrollY - window.innerHeight
-    for(const item of items){
-        animationsMap.set(item,getDomAnimation(scrollStart,scrollEnd,item))
+    if(items.length === 0){
+        return
     }
+    const playGroundRect = playGround.getBoundingClientRect()
+    const scrollY = window.scrollY
+
+    const playGroundTop = playGroundRect.top + scrollY
+    const playGroundBottom = playGroundRect.bottom + scrollY - window.innerHeight
+    
+    const listRect = list.getBoundingClientRect()
+
+    for (let i = 0; i< items.length; i++){
+        const item = items[i]
+
+        const scrollStart = playGroundTop + item.dataset.order * 600
+        const scrollEnd = playGroundBottom;
+
+        const itemWidth = item.clientWidth
+        const itemHeight = item.clientHeight
+        const itemLeft = item.offsetLeft
+        const itemTop = item.offsetTop
+
+        const opacityAnimation = createAnimation(scrollStart,scrollEnd,0,1)
+
+        const scaleAnimation = createAnimation(scrollStart,scrollEnd,0.5,1)
+
+        const translateXAnimation = createAnimation(
+            scrollStart,
+            scrollEnd,
+            listRect.width/2 - itemLeft - itemWidth/2,
+            0
+        )
+
+        const translateYAnimation = createAnimation(
+            scrollStart,
+            scrollEnd,
+            listRect.height/2 - itemTop - itemHeight/2,
+            0
+        )
+        const animations = {
+            opacity: function(scroollY){
+                return opacityAnimation(scroollY)
+            },
+            transform: function(scrollY){
+                const scaled = scaleAnimation(scrollY)
+                const x = translateXAnimation(scrollY)
+                const y = translateYAnimation(scrollY)
+                return `translate(${x}px,${y}px) scale(${scaled})`
+            }
+        }
+        animationsMap.set(item,animations)
+    }
+   
 }
 
-updateMap()
+updateAnimationMap()
 
-function updateStyle(){
-    const scroll = window.scrollY
-    for(const [dom,value] of animationsMap){
-        for (const cssPro in value){
-            dom.style[cssPro] = value[cssPro](scroll)
+function updateStyles(){
+    const scrollY = window.scrollY
+
+    for ( const [item,animations] of animationsMap){
+        for (const prop in animations){
+            item.style[prop] = animations[prop](scrollY)
         }
     }
-    console.log(scroll)
 }
 
-updateStyle()
+updateStyles()
 
-window.addEventListener('scroll',updateStyle)
+window.addEventListener('scroll',updateStyles)
+
+window.addEventListener('resize',()=>{
+    updateAnimationMap()
+    updateStyles()
+}
+)
