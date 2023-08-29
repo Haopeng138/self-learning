@@ -74,7 +74,9 @@ class MyPromise {
 }
 
 const p = new MyPromise((resolve, reject) => {
-    reject(123);
+    setTimeout(()=>{
+        reject(123)
+    },1000)
 });
 
 p.then(
