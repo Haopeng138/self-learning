@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask SSE Stream</title>
+</head>
+<body>
+    <h1>Server-Sent Events</h1>
+    <div id="messages"></div>
+    <button id="pingButton">Ping</button>
+    <button id="closeButton">Close</button>
+
+    <script>
+        // Function to create a new EventSource and listen for messages
+        function startListening() {
+            const eventSource = new EventSource('http://127.0.0.1:5000/listen');
+
+            eventSource.onmessage = function(event) {
+                const messagesDiv = document.getElementById('messages');
+                const newMessage = document.createElement('div');
+                newMessage.textContent = event.data;
+                messagesDiv.appendChild(newMessage);
+            };
+
+            eventSource.onerror = function(event) {
+                console.error("EventSource failed:", event);
+                eventSource.close();
+            };
+
+            return eventSource;
+        }
+
+        // Start listening to the server-sent events
+        const eventSource = startListening();
+
+        // Add event listener to the ping button
+        document.getElementById('pingButton').addEventListener('click', function() {
+            fetch('http://127.0.0.1:5000/ping')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    console.log('Ping sent!');
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        });
+
+        // Add event listener to the close button
+        document.getElementById('closeButton').addEventListener('click', function() {
+            fetch('http://127.0.0.1:5000/close')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    console.log('Close signal sent!');
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        });
+    </script>
+</body>
+</html>
