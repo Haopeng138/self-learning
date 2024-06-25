@@ -1,4 +1,7 @@
+import threading
+import time
 import flask
+import json
 from flask_cors import CORS,cross_origin
 app = flask.Flask(__name__)
 CORS(app)
@@ -38,9 +41,9 @@ class MessageAnnouncer:
 announcer = MessageAnnouncer()
 
 def format_sse(data: str, event=None) -> str:
-    msg = f'data: {data}\n\n'
+    msg = json.dumps({"data": data})
     if event is not None:
-        msg = f'event: {event}\n{msg}'
+        msg = json.dumps({"event": event, "data": data})
     return msg
 
 @app.route('/ping')
@@ -66,11 +69,21 @@ def listen():
             msg = messages.get()  # blocks until a new message arrives
             if msg is None:
                 break
-            yield msg.encode('utf-8')
+            yield f"data: {msg}\n\n".encode('utf-8')
 
         if not announcer.isConected:
-            yield format_sse(data='disconnected').encode('utf-8')
+            yield f"data: {format_sse(data=None)}\n\n".encode('utf-8')
             return
+        
+
+    def start_announcer():
+        n = 0 
+        while n < 10:
+            announcer.announce(format_sse(data='connected'))
+            n += 1
+            time.sleep(1)
+        announcer.close()
+    threading.Thread(target=start_announcer).start()
     return flask.Response(stream(), mimetype='text/event-stream')
 
 if __name__ == '__main__':
