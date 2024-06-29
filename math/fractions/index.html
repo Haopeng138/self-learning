@@ -51,13 +51,20 @@
             justify-content: center;
             align-items: flex-end;
             margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .visual-group {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            margin: 0 10px;
         }
         .visual {
-            width: 100px;
-            height: 100px;
+            width: 50px;
+            height: 50px;
             border: 2px solid black;
             display: inline-block;
-            margin: 0 10px;
+            margin: 0 2px;
             position: relative;
         }
         .filled {
@@ -66,6 +73,9 @@
             bottom: 0;
             width: 100%;
             transition: height 0.3s;
+        }
+        .filled.negative {
+            background-color: #FF5733;
         }
         .grid-line {
             position: absolute;
@@ -84,15 +94,15 @@
         
         <h2>Suma</h2>
         <div class="fraction">
-            <input type="number" id="sum-num1" class="numerator" value="1" min="0">
+            <input type="number" id="sum-num1" class="numerator" value="1" step="1">
             <span class="fraction-line"></span>
-            <input type="number" id="sum-den1" class="denominator" value="2" min="1">
+            <input type="number" id="sum-den1" class="denominator" value="2" min="1" step="1">
         </div>
         <span class="operator">+</span>
         <div class="fraction">
-            <input type="number" id="sum-num2" class="numerator" value="1" min="0">
+            <input type="number" id="sum-num2" class="numerator" value="1" step="1">
             <span class="fraction-line"></span>
-            <input type="number" id="sum-den2" class="denominator" value="4" min="1">
+            <input type="number" id="sum-den2" class="denominator" value="4" min="1" step="1">
         </div>
         <span class="equals">=</span>
         <div class="fraction result" id="sum-result">
@@ -101,25 +111,19 @@
             <span class="denominator">4</span>
         </div>
         
-        <div class="visual-container" id="sum-visual-container">
-            <div class="visual" id="sum-visual1"></div>
-            <span class="operator">+</span>
-            <div class="visual" id="sum-visual2"></div>
-            <span class="equals">=</span>
-            <div class="visual" id="sum-visual-result"></div>
-        </div>
+        <div class="visual-container" id="sum-visual-container"></div>
         
         <h2>Resta</h2>
         <div class="fraction">
-            <input type="number" id="sub-num1" class="numerator" value="3" min="0">
+            <input type="number" id="sub-num1" class="numerator" value="3" step="1">
             <span class="fraction-line"></span>
-            <input type="number" id="sub-den1" class="denominator" value="4" min="1">
+            <input type="number" id="sub-den1" class="denominator" value="4" min="1" step="1">
         </div>
         <span class="operator">-</span>
         <div class="fraction">
-            <input type="number" id="sub-num2" class="numerator" value="1" min="0">
+            <input type="number" id="sub-num2" class="numerator" value="1" step="1">
             <span class="fraction-line"></span>
-            <input type="number" id="sub-den2" class="denominator" value="3" min="1">
+            <input type="number" id="sub-den2" class="denominator" value="3" min="1" step="1">
         </div>
         <span class="equals">=</span>
         <div class="fraction result" id="sub-result">
@@ -128,13 +132,7 @@
             <span class="denominator">12</span>
         </div>
         
-        <div class="visual-container">
-            <div class="visual" id="sub-visual1"></div>
-            <span class="operator">-</span>
-            <div class="visual" id="sub-visual2"></div>
-            <span class="equals">=</span>
-            <div class="visual" id="sub-visual-result"></div>
-        </div>
+        <div class="visual-container" id="sub-visual-container"></div>
     </div>
 
     <script>
@@ -170,79 +168,67 @@
                 <span class="denominator">${simplifiedDen}</span>
             `;
 
-            updateVisual(`${operation}-visual1`, num1, den1);
-            updateVisual(`${operation}-visual2`, num2, den2);
-            updateVisual(`${operation}-visual-result`, simplifiedNum, simplifiedDen);
-
-            if (operation === 'sum' && simplifiedNum > simplifiedDen) {
-                const wholeNumber = Math.floor(simplifiedNum / simplifiedDen);
-                const remainder = simplifiedNum % simplifiedDen;
-                resultElement.innerHTML = `
-                    ${wholeNumber} 
-                    <div class="fraction">
-                        <span class="numerator">${remainder}</span>
-                        <span class="fraction-line"></span>
-                        <span class="denominator">${simplifiedDen}</span>
-                    </div>
-                `;
-                updateVisualContainer(operation, wholeNumber, remainder, simplifiedDen);
-            } else {
-                updateVisualContainer(operation, 0, simplifiedNum, simplifiedDen);
-            }
+            updateVisualContainer(operation, num1, den1, num2, den2, simplifiedNum, simplifiedDen);
         }
 
-        function updateVisual(id, num, den) {
-            const visual = document.getElementById(id);
-            visual.innerHTML = '';
-            const filledHeight = (num / den) * 100;
-            visual.innerHTML = `<div class="filled" style="height: ${filledHeight}%"></div>`;
-            
-            // Add grid lines
-            for (let i = 1; i < den; i++) {
-                const gridLine = document.createElement('div');
-                gridLine.className = 'grid-line';
-                gridLine.style.bottom = `${(i / den) * 100}%`;
-                visual.appendChild(gridLine);
+        function createVisualGroup(num, den, isNegative = false) {
+            const group = document.createElement('div');
+            group.className = 'visual-group';
+
+            const absNum = Math.abs(num);
+            const wholeNumber = Math.floor(absNum / den);
+            const remainder = absNum % den;
+
+            // Add whole number squares
+            for (let i = 0; i < wholeNumber; i++) {
+                const visual = document.createElement('div');
+                visual.className = 'visual';
+                const filled = document.createElement('div');
+                filled.className = `filled${isNegative ? ' negative' : ''}`;
+                filled.style.height = '100%';
+                visual.appendChild(filled);
+                group.appendChild(visual);
             }
+
+            // Add fraction square
+            if (remainder > 0 || wholeNumber === 0) {
+                const visual = document.createElement('div');
+                visual.className = 'visual';
+                const filled = document.createElement('div');
+                filled.className = `filled${isNegative ? ' negative' : ''}`;
+                filled.style.height = `${(remainder / den) * 100}%`;
+                visual.appendChild(filled);
+
+                // Add grid lines
+                for (let i = 1; i < den; i++) {
+                    const gridLine = document.createElement('div');
+                    gridLine.className = 'grid-line';
+                    gridLine.style.bottom = `${(i / den) * 100}%`;
+                    visual.appendChild(gridLine);
+                }
+
+                group.appendChild(visual);
+            }
+
+            return group;
         }
 
-        function updateVisualContainer(operation, wholeNumber, num, den) {
+        function updateVisualContainer(operation, num1, den1, num2, den2, resultNum, resultDen) {
             const container = document.getElementById(`${operation}-visual-container`);
             container.innerHTML = '';
 
-            // Add visuals for the first operand
-            const visual1 = document.createElement('div');
-            visual1.className = 'visual';
-            visual1.id = `${operation}-visual1`;
-            container.appendChild(visual1);
+            // First operand
+            container.appendChild(createVisualGroup(num1, den1, num1 < 0));
 
-            container.appendChild(createOperator('+'));
+            container.appendChild(createOperator(operation === 'sum' ? '+' : '-'));
 
-            // Add visuals for the second operand
-            const visual2 = document.createElement('div');
-            visual2.className = 'visual';
-            visual2.id = `${operation}-visual2`;
-            container.appendChild(visual2);
+            // Second operand
+            container.appendChild(createVisualGroup(num2, den2, num2 < 0));
 
             container.appendChild(createOperator('='));
 
-            // Add visuals for whole numbers
-            for (let i = 0; i < wholeNumber; i++) {
-                const wholeVisual = document.createElement('div');
-                wholeVisual.className = 'visual';
-                wholeVisual.innerHTML = '<div class="filled" style="height: 100%"></div>';
-                container.appendChild(wholeVisual);
-            }
-
-            // Add visual for the fraction part
-            const fractionVisual = document.createElement('div');
-            fractionVisual.className = 'visual';
-            fractionVisual.id = `${operation}-visual-result`;
-            container.appendChild(fractionVisual);
-
-            updateVisual(`${operation}-visual1`, parseInt(document.getElementById(`${operation}-num1`).value), parseInt(document.getElementById(`${operation}-den1`).value));
-            updateVisual(`${operation}-visual2`, parseInt(document.getElementById(`${operation}-num2`).value), parseInt(document.getElementById(`${operation}-den2`).value));
-            updateVisual(`${operation}-visual-result`, num, den);
+            // Result
+            container.appendChild(createVisualGroup(resultNum, resultDen, resultNum < 0));
         }
 
         function createOperator(symbol) {
