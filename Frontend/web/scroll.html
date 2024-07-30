@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <style>
+            /* Three column layout */
+            .columns {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .column {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .column-reverse {
+                transform: translateY(calc(-100% + 100vh));
+            }
+            .columns {
+                overflow-y: hidden;
+            }
+            .column-reverse {
+                flex-direction: column-reverse;
+            }
+
+            @keyframes adjust-position {
+                /* Start position: shift entire column up, but not so that it goes out of view */
+                from {
+                    transform: translateY(calc(-100% + 100vh));
+                }
+            
+                /* End position: shift entire column down, but not so that it goes out of view */
+                to {
+                    transform: translateY(calc(100% - 100vh));
+                }
+            }
+
+            .column-reverse {
+                animation: adjust-position linear forwards;
+                animation-timeline: scroll(root block);
+            }
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div class="columns">
+            <div class="column column-reverse">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+
+            </div>
+            <div class="column">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+            </div>
+            <div class="column column-reverse">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+                <img src="https://via.placeholder.com/150" alt="Image 1">
+            </div>
+        </div>
+        <script src="" async defer></script>
+    </body>
+</html>

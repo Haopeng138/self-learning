@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <style>
+            :root {
+                --pic: url("https://oss.aiyuzhou8.com/2023/05/08-.jpg");
+            }
+            div {
+                position: relative;
+                margin: auto;
+                width: 350px;
+                height: 500px;
+                border-radius: 30px;
+                overflow: hidden;
+                
+                &::before,
+                &::after {
+                    content: "";
+                    position: absolute;
+                    background: var(--pic);
+                    background-size: cover;
+                    background-position: center;
+                    border-radius: 30px;
+                }
+                
+                &::before {
+                    inset: 0;
+                    filter: blur(20px);
+                }
+                
+                &::after {
+                    inset: 50px;
+                }
+            }
+            div {
+                width: 350px;
+                height: 500px;
+                border-radius: 30px;
+                background: conic-gradient(#03a9f4, #e91e63, #9c27b0, #ff5722, #03a9f4);
+            }
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div></div>
+        <div></div>
+        <script src="" async defer></script>
+    </body>
+</html>
