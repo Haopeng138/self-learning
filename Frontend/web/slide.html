@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continuous Infinite Carousel with Proportional Scaling</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .carousel-container {
+            width: 100%; /* Width of the visible area */
+            height: 200px; /* Height of the carousel */
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .carousel {
+            display: flex;
+            width: max-content;
+            animation: scroll 20s linear infinite;
+        }
+
+        .carousel .card {
+            width: 100px;
+            height: 100px;
+            margin: 0 10px;
+            border: 1px solid #000;
+            flex-shrink: 0;
+            transition: transform 0.5s ease, width 0.5s ease, height 0.5s ease;
+        }
+
+        .carousel .card img {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .carousel .card:hover {
+            transform: scale(1.1);
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="carousel-container">
+        <div class="carousel">
+            <!-- Cards will be generated here -->
+        </div>
+    </div>
+
+    <script>
+        const cardsUrl = Array.from({ length: 20 }).map(
+            (_, i) => `https://via.placeholder.com/100x100?text=${i + 1}`
+        );
+
+        const carousel = document.querySelector('.carousel');
+
+        function createCards() {
+            cardsUrl.forEach((url) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.innerHTML = `<img src="${url}" alt="Card Image" />`;
+                carousel.appendChild(card);
+            });
+
+            // Clone the cards to allow continuous looping
+            cardsUrl.forEach((url) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.innerHTML = `<img src="${url}" alt="Card Image" />`;
+                carousel.appendChild(card);
+            });
+        }
+
+        createCards();
+
+        // Stop the animation when hovering over any card
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseover', () => {
+                carousel.style.animationPlayState = 'paused';
+            });
+
+            card.addEventListener('mouseout', () => {
+                carousel.style.animationPlayState = 'running';
+            });
+        });
+    </script>
+</body>
+</html>
