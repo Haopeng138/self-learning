@@ -1,170 +1,202 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Three.js - Cubes</title>
-  <style>
-    body { margin: 0; }
-    canvas { display: block; }
-    #info {
-      position: absolute;
-      top: 10px;
-      width: 100%;
-      text-align: center;
-      color: white;
-      font-family: Arial;
-      z-index: 100;
-      pointer-events: none;
-    }
-  </style>
+    <title>Three.js - Cubes with Rotation Buttons</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .cube-controls {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: rgba(255,255,255,0.7);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<div id="info">Haz clic en un cubo y arrastra para rotarlo de forma independiente</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
+    <div id="controls">
+        <div class="cube-controls" id="cube1-controls">
+            <button onclick="rotateCube(cube1, 'x', 1)">↑ Cubo 1</button>
+            <button onclick="rotateCube(cube1, 'x', -1)">↓ Cubo 1</button>
+            <button onclick="rotateCube(cube1, 'y', 1)">→ Cubo 1</button>
+            <button onclick="rotateCube(cube1, 'y', -1)">← Cubo 1</button>
+        </div>
+        <div class="cube-controls" id="cube2-controls">
+            <button onclick="rotateCube(cutCube, 'x', 1)">↑ Cubo 2</button>
+            <button onclick="rotateCube(cutCube, 'x', -1)">↓ Cubo 2</button>
+            <button onclick="rotateCube(cutCube, 'y', 1)">→ Cubo 2</button>
+            <button onclick="rotateCube(cutCube, 'y', -1)">← Cubo 2</button>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-  const raycaster = new THREE.Raycaster();
-  const mouse = new THREE.Vector2();
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
 
-  // Iluminación
-  const ambientLight = new THREE.AmbientLight(0x404040);
-  scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(1, 1, 1);
-  scene.add(directionalLight);
+        // Iluminación
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
 
-  // Color común para ambos cubos
-  const commonColor = 0x4287f5; // Azul
-  const commonMaterial = new THREE.MeshPhongMaterial({ color: commonColor });
+        // Color común para ambos cubos
+        const commonColor = 0x4287f5; // Azul
+        const commonMaterial = new THREE.MeshPhongMaterial({ color: commonColor });
 
-  // Cubo normal
-  const geometry1 = new THREE.BoxGeometry(1, 1, 1);
-  const cube1 = new THREE.Mesh(geometry1, commonMaterial.clone());
-  cube1.position.x = -2;
-  scene.add(cube1);
+        // Cubo normal
+        const geometry1 = new THREE.BoxGeometry(1, 1, 1);
+        const cube1 = new THREE.Mesh(geometry1, commonMaterial.clone());
+        cube1.position.x = -2;
+        scene.add(cube1);
 
-  // Cubo con esquina ligeramente cortada
-  const vertices = new Float32Array([
-    // cara frontal (con esquina superior derecha ligeramente cortada)
-    -0.5, -0.5,  0.5,
-    0.5, -0.5,  0.5,
-    -0.5,  0.5,  0.5,
-    0.5,  0.5,  0.5,  // punto ajustado para un corte más sutil
+        // Cubo con esquina ligeramente cortada
+        const vertices = new Float32Array([
+            // cara frontal (con esquina superior derecha ligeramente cortada)
+            -0.5, -0.5,  0.5,
+            0.5, -0.5,  0.5,
+            -0.5,  0.5,  0.5,
+            0.4,  0.4,  0.5,  // punto ajustado para un corte más sutil
 
-    // cara trasera (con esquina superior derecha ligeramente cortada)
-    -0.5, -0.5, -0.5,
-    0.5, -0.5, -0.5,
-    -0.5,  0.5, -0.5,
-    0.5,  0.5, -0.5,  // punto ajustado para un corte más sutil
-  ]);
+            // cara trasera (con esquina superior derecha ligeramente cortada)
+            -0.5, -0.5, -0.5,
+            0.5, -0.5, -0.5,
+            -0.5,  0.5, -0.5,
+            0.4,  0.4, -0.5,  // punto ajustado para un corte más sutil
+        ]);
 
-  const indices = new Uint16Array([
-    // cara frontal
-    0, 1, 3,
-    0, 3, 2,
+        const indices = new Uint16Array([
+            // cara frontal
+            0, 1, 3,
+            0, 3, 2,
+            
+            // cara trasera
+            4, 7, 5,
+            4, 6, 7,
+            
+            // cara izquierda
+            4, 0, 2,
+            4, 2, 6,
+            
+            // cara inferior
+            0, 4, 5,
+            0, 5, 1,
+            
+            // cara superior (cortada)
+            2, 3, 7,
+            2, 7, 6,
+            
+            // cara derecha (cortada)
+            1, 5, 7,
+            1, 7, 3,
+        ]);
 
-    // cara trasera
-    4, 7, 5,
-    4, 6, 7,
+        const geometry2 = new THREE.BufferGeometry();
+        geometry2.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        geometry2.setIndex(new THREE.BufferAttribute(indices, 1));
+        geometry2.computeVertexNormals();
 
-    // cara izquierda
-    4, 0, 2,
-    4, 2, 6,
+        const cutCube = new THREE.Mesh(geometry2, commonMaterial.clone());
+        cutCube.position.x = 2;
+        scene.add(cutCube);
 
-    // cara inferior
-    0, 4, 5,
-    0, 5, 1,
+        camera.position.z = 5;
 
-    // cara superior (cortada)
-    2, 3, 7,
-    2, 7, 6,
+        // Función para rotar cubos
+        function rotateCube(cube, axis, direction) {
+            const rotationSpeed = 0.2;
+            if (axis === 'x') {
+                cube.rotation.x += direction * rotationSpeed;
+            } else if (axis === 'y') {
+                cube.rotation.y += direction * rotationSpeed;
+            }
+        }
 
-    // cara derecha (cortada)
-    1, 5, 7,
-    1, 7, 3,
-  ]);
+        // Variables para la rotación con mouse
+        let isDragging = false;
+        let selectedObject = null;
+        let previousMousePosition = {
+            x: 0,
+            y: 0
+        };
 
-  const geometry2 = new THREE.BufferGeometry();
-  geometry2.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-  geometry2.setIndex(new THREE.BufferAttribute(indices, 1));
-  geometry2.computeVertexNormals();
+        function onMouseDown(event) {
+            event.preventDefault();
 
-  const cutCube = new THREE.Mesh(geometry2, commonMaterial.clone());
-  cutCube.position.x = 2;
-  scene.add(cutCube);
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-  camera.position.z = 5;
+            raycaster.setFromCamera(mouse, camera);
 
-  // Variables para la rotación
-  let isDragging = false;
-  let selectedObject = null;
-  let previousMousePosition = {
-    x: 0,
-    y: 0
-  };
+            const intersects = raycaster.intersectObjects([cube1, cutCube]);
 
-  function onMouseDown(event) {
-    event.preventDefault();
+            if (intersects.length > 0) {
+                isDragging = true;
+                selectedObject = intersects[0].object;
+                selectedObject.material.emissive.set(0x333333);
+            }
+        }
 
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        function onMouseMove(event) {
+            if (isDragging && selectedObject) {
+                const deltaMove = {
+                    x: event.clientX - previousMousePosition.x,
+                    y: event.clientY - previousMousePosition.y
+                };
 
-    raycaster.setFromCamera(mouse, camera);
+                selectedObject.rotation.y += deltaMove.x * 0.01;
+                selectedObject.rotation.x += deltaMove.y * 0.01;
+            }
 
-    const intersects = raycaster.intersectObjects([cube1, cutCube]);
+            previousMousePosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+        }
 
-    if (intersects.length > 0) {
-      isDragging = true;
-      selectedObject = intersects[0].object;
-      selectedObject.material.emissive.set(0x333333);
-    }
-  }
+        function onMouseUp(event) {
+            if (selectedObject) {
+                selectedObject.material.emissive.set(0x000000);
+                selectedObject = null;
+            }
+            isDragging = false;
+        }
 
-  function onMouseMove(event) {
-    if (isDragging && selectedObject) {
-      const deltaMove = {
-        x: event.clientX - previousMousePosition.x,
-        y: event.clientY - previousMousePosition.y
-      };
+        renderer.domElement.addEventListener('mousedown', onMouseDown);
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
 
-      selectedObject.rotation.y += deltaMove.x * 0.01;
-      selectedObject.rotation.x += deltaMove.y * 0.01;
-    }
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
 
-    previousMousePosition = {
-      x: event.clientX,
-      y: event.clientY
-    };
-  }
-
-  function onMouseUp(event) {
-    if (selectedObject) {
-      selectedObject.material.emissive.set(0x000000);
-      selectedObject = null;
-    }
-    isDragging = false;
-  }
-
-  renderer.domElement.addEventListener('mousedown', onMouseDown);
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
-
-  function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-  }
-  animate();
-
-  window.addEventListener('resize', onWindowResize, false);
-  function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-</script>
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+    </script>
 </body>
 </html>
