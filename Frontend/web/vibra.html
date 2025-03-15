@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibrar Móvil</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="vibrar()">Vibrar</button>
+
+    <script>
+        function vibrar() {
+            // Verifica si la API de vibración está soportada
+            if ("vibrate" in navigator) {
+                // Activa la vibración por 200ms
+                navigator.vibrate(200);
+            } else {
+                alert("Lo siento, tu dispositivo no soporta la vibración");
+            }
+        }
+    </script>
+</body>
+</html>
